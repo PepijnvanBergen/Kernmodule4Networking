@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Unity.Networking.Transport;
 
 public class Welcome : NetworkMessage
@@ -28,7 +25,7 @@ public class Welcome : NetworkMessage
     public override void RecievedOnClient()
     {
         NetUtility.C_WELCOME?.Invoke(this);
-        Debug.Log(NetUtility.C_WELCOME);
+        //Debug.Log(NetUtility.C_WELCOME);
     }
     public override void RecievedOnServer(NetworkConnection cnn)
     {

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -9,14 +7,24 @@ public class GameUI : MonoBehaviour
     [SerializeField]
     private GameObject gameUIMenu;
     [SerializeField]
-    private GameObject onlineGameMenu;
+    private GameObject hostConnectMenu;
     [SerializeField]
-    private GameObject hostMenu;
+    private GameObject OnlineGame;
+    [SerializeField]
+    private GameObject waitingMenu;
+
+    [SerializeField]
+    private GameObject loginUserMenu;
+    [SerializeField]
+    private GameObject loginServerMenu;
+    [SerializeField]
+    private GameObject registerMenu;
+
+    [Space]
     [SerializeField]
     private TMP_InputField addressInput;
 
-
-
+    [Space]
     public TransportServer server;
     public TransportClient client;
 
@@ -24,21 +32,32 @@ public class GameUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        RegisterToEvents();
     }
     //MainMenu
-    public void LocalGame()
+    public void OnPlay()
     {
-        server.Init(1511);
-        client.Init("127.0.0.1", 1511);
-
-        Debug.Log("LocalGame");
-    }
-    public void OnlineGame()
-    {
-        Debug.Log("OnlineGame");
+        Debug.Log("PlayGame!");
         gameUIMenu.SetActive(false);
-        onlineGameMenu.SetActive(true);
+        hostConnectMenu.SetActive(true);
     }
+    //hostConnectMenu
+    public void onHost()
+    {
+        hostConnectMenu.SetActive(false);
+        loginServerMenu.SetActive(true);
+    }
+    public void OnConnect()
+    {
+        hostConnectMenu.SetActive(false);
+        loginUserMenu.SetActive(true);
+    }
+    public void OnRegister()
+    {
+        hostConnectMenu.SetActive(false);
+        registerMenu.SetActive(true);
+    }
+    //Host
     public void OnOnlineHost()
     {
         Debug.Log("OnOnlineHost");
@@ -46,28 +65,49 @@ public class GameUI : MonoBehaviour
         server.Init(1511);
         client.Init("127.0.0.1", 1511);
 
-        onlineGameMenu.SetActive(false);
-        hostMenu.SetActive(true);
+        OnlineGame.SetActive(false);
+        waitingMenu.SetActive(false);
     }
+    //Connect
     public void OnOnlineConnect()
     {
-        Debug.Log("addres " + addressInput);
         client.Init(addressInput.text, 1511);
-        Debug.Log("OnOnlineConnect");
+        OnlineGame.SetActive(false);
+        waitingMenu.SetActive(false);
     }
+    //Back
     public void BackToMenu()
     {
         server.ShutDown();
         client.ShutDown();
-        Debug.Log("OnOnlineBack");
 
-        hostMenu.SetActive(false);
-        onlineGameMenu.SetActive(false);
+        OnlineGame.SetActive(false);
+        hostConnectMenu.SetActive(false);
+        loginUserMenu.SetActive(false);
+        loginServerMenu.SetActive(false);
         gameUIMenu.SetActive(true);
+        registerMenu.SetActive(false);
+        waitingMenu.SetActive(false);
     }
     public void QuitGame()
     {
-        Debug.Log("QuitGame");
         Application.Quit();
+        UnRegisterToEvents();
+    }
+    public void RegisterToEvents()
+    {
+        NetUtility.C_GAME_START += HideUI;
+    }
+    public void UnRegisterToEvents()
+    {
+        NetUtility.C_GAME_START -= HideUI;
+    }
+    private void HideUI(NetworkMessage msg)
+    {
+        OnlineGame.SetActive(false);
+        hostConnectMenu.SetActive(false);
+        gameUIMenu.SetActive(false);
+        loginUserMenu.SetActive(false);
+        loginServerMenu.SetActive(false);
     }
 }
